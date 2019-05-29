@@ -53,15 +53,15 @@ if (window) {
     resizeGeneration++
   })
 }
-function getCachedSize (tab: ITab): ISize {
+function getCachedSize(tab: ITab): ISize {
   const cachedSize: ISize = tab['_kui_pty_cachedSize']
   if (cachedSize &&
-      cachedSize.sidecarState === getSidecarState(tab) &&
-      cachedSize.resizeGeneration === resizeGeneration) {
+    cachedSize.sidecarState === getSidecarState(tab) &&
+    cachedSize.resizeGeneration === resizeGeneration) {
     return cachedSize
   }
 }
-function setCachedSize (tab: ITab, { rows, cols }: { rows: number; cols: number }) {
+function setCachedSize(tab: ITab, { rows, cols }: { rows: number; cols: number }) {
   tab['_kui_pty_cachedSize'] = { rows, cols, sidecarState: getSidecarState(tab), resizeGeneration }
 }
 
@@ -94,7 +94,7 @@ class Resizer {
   private _ws: Channel
   private readonly resizeNow: any
 
-  constructor (terminal: xterm.Terminal, tab: ITab) {
+  constructor(terminal: xterm.Terminal, tab: ITab) {
     this.tab = tab
     this.terminal = terminal as HTerminal
 
@@ -114,19 +114,19 @@ class Resizer {
     this.resize()
   }
 
-  get ws (): Channel {
+  get ws(): Channel {
     return this._ws
   }
 
-  set ws (ws: Channel) {
+  set ws(ws: Channel) {
     this._ws = ws
   }
 
-  destroy () {
+  destroy() {
     window.removeEventListener('resize', this.resizeNow)
   }
 
-  private isEmptyCursorRow (row: Element): boolean {
+  private isEmptyCursorRow(row: Element): boolean {
     return row.children.length === 1 && row.children[0].classList.contains('xterm-cursor')
   }
 
@@ -134,7 +134,7 @@ class Resizer {
    * Hide trailing empty blanks
    *
    */
-  hideTrailingEmptyBlanks (remove = false, from = 0) {
+  hideTrailingEmptyBlanks(remove = false, from = 0) {
     if (this.frozen) {
       // we have already trimmed trailing empty blanks by removal from
       // the DOM; this is irreversible
@@ -170,7 +170,7 @@ class Resizer {
    * Render a row that contains only the cursor as invisible
    *
    */
-  hideCursorOnlyRow () {
+  hideCursorOnlyRow() {
     const cursor = this.terminal.element.querySelector('.xterm-rows .xterm-cursor')
     const cursorRow = cursor && (cursor.parentNode as Element)
     if (cursorRow) {
@@ -180,19 +180,19 @@ class Resizer {
     }
   }
 
-  static paddingHorizontal (elt: Element) {
+  static paddingHorizontal(elt: Element) {
     const style = window.getComputedStyle(elt)
     return parseInt(style.getPropertyValue('padding-left') || '0', 10)
       + parseInt(style.getPropertyValue('padding-right') || '0', 10)
   }
 
-  static paddingVertical (elt: Element) {
+  static paddingVertical(elt: Element) {
     const style = window.getComputedStyle(elt)
     return parseInt(style.getPropertyValue('padding-top') || '0', 10)
       + parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
   }
 
-  private getSize (forceRecompute: boolean) {
+  private getSize(forceRecompute: boolean) {
     const cachedSize = getCachedSize(this.tab)
     if (!forceRecompute && cachedSize !== undefined) {
       debug('getSize using cached size', cachedSize.rows, cachedSize.cols)
@@ -226,16 +226,16 @@ class Resizer {
     return newSize
   }
 
-  set frozen (val: boolean) {
+  set frozen(val: boolean) {
     this._frozen = val
   }
 
-  get frozen (): boolean {
+  get frozen(): boolean {
     return this._frozen
   }
 
   /** flush=true means that it is likely that the dimensions might have changed; false means definitely have not changed */
-  resize (flush = false) {
+  resize(flush = false) {
     if (this.frozen) {
       return
     }
@@ -255,31 +255,31 @@ class Resizer {
     }
   }
 
-  inApplicationMode (): boolean {
+  inApplicationMode(): boolean {
     return this.app
   }
 
-  inAltBufferMode (): boolean {
+  inAltBufferMode(): boolean {
     return this.alt
   }
 
-  wasEverInAltBufferMode (): boolean {
+  wasEverInAltBufferMode(): boolean {
     return this.wasAlt
   }
 
-  enterApplicationMode () {
+  enterApplicationMode() {
     debug('switching to application mode')
     this.app = true
     this.tab.classList.add('xterm-application-mode')
   }
 
-  exitApplicationMode () {
+  exitApplicationMode() {
     debug('switching out of application mode')
     this.app = false
     this.tab.classList.remove('xterm-application-mode')
   }
 
-  enterAltBufferMode () {
+  enterAltBufferMode() {
     debug('switching to alt buffer mode')
     this.alt = true
     this.wasAlt = true
@@ -289,7 +289,7 @@ class Resizer {
     this.tab.classList.add('xterm-alt-buffer-mode')
   }
 
-  exitAltBufferMode () {
+  exitAltBufferMode() {
     debug('switching to normal buffer mode')
     this.alt = false
     this.tab.classList.remove('xterm-alt-buffer-mode')
@@ -301,7 +301,7 @@ class Resizer {
  *
  */
 let cachedFontProperties: { fontFamily: string; fontSize: number }
-function getFontProperties (flush: boolean) {
+function getFontProperties(flush: boolean) {
   if (flush || !cachedFontProperties) {
     debug('computing font properties')
     const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))

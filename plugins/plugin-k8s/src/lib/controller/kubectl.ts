@@ -52,13 +52,13 @@ import { apply as addRelevantModes } from '../view/modes/registrar'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends IExecOptions {
-/*  credentials?: {
-    k8s: {
-      kubeconfig: string
-      ca: string
-      cafile: string
-    }
-  } */
+  /*  credentials?: {
+      k8s: {
+        kubeconfig: string
+        ca: string
+        cafile: string
+      }
+    } */
 }
 
 /**
@@ -236,7 +236,7 @@ const usage = (command: string): IUsageModel => ({
   title: command,
   command,
   strict: command,
-  onlyEnforceOptions: [ '-f' ],
+  onlyEnforceOptions: ['-f'],
   noHelp: true, // kubectl and helm both provide their own -h output
   docs: `Execute ${command} commands`,
   optional: [
@@ -292,15 +292,15 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
   //
   const output = !options.help &&
     (options.output || options.o
-     || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
-     || (isKube && verb === 'describe' && 'yaml')
-     || (isKube && verb === 'logs' && 'Latest')
-     || (isKube && verb === 'get' && execOptions.raw && 'json'))
+      || (command === 'helm' && verb === 'get' && 'yaml') // helm get seems to spit out yaml without our asking
+      || (isKube && verb === 'describe' && 'yaml')
+      || (isKube && verb === 'logs' && 'Latest')
+      || (isKube && verb === 'get' && execOptions.raw && 'json'))
 
   if ((!isHeadless() || execOptions.isProxied) &&
-      !execOptions.noDelegation &&
-      isKube &&
-      ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
+    !execOptions.noDelegation &&
+    isKube &&
+    ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) && (execOptions.type !== ExecType.Nested || execOptions.delegationOk))) {
     debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
     const describeImpl = (await import('./describe')).default
     return describeImpl(opts).then(resolveBase).catch(reject)
@@ -440,7 +440,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
           undefined, undefined, { parameters: execOptions.parameters })
           .catch(err => {
             if (err.code === 404 && expectedState === FinalState.OfflineLike) {
-            // that's ok!
+              // that's ok!
               debug('resource not found after status check, but that is ok because that is what we wanted')
               return out
             } else {
@@ -478,7 +478,7 @@ const executeLocally = (command: string) => (opts: IEvaluatorArgs) => new Promis
     const originalCode = code
     const isUsage = code !== 0 &&
       ((verb === 'config' && !entityType && !entity) ||
-       (/Error: unknown.*flag/i.test(err)))
+        (/Error: unknown.*flag/i.test(err)))
     if (isUsage) {
       code = 0
       out = err
@@ -704,10 +704,10 @@ const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: IEvaluatorA
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
-  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: ['openwhisk'] })
+  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, { usage: usage('kubectl'), requiresLocal: true, noAuthOk: ['openwhisk'] })
 
-  await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+  await commandTree.listen('/k8s/helm', helm, { usage: usage('helm'), requiresLocal: true, noAuthOk: ['openwhisk'] })
 
   //
   // register some of the common verbs so that the kubectl plugin works more gracefully:
@@ -724,6 +724,6 @@ export default async (commandTree: CommandRegistrar) => {
   await Promise.all(shorthands.map(verb => {
     return commandTree.listen(`/k8s/${verb}`,
       dispatchViaDelegationTo(kubectl),
-      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: [ 'openwhisk' ] })
+      { usage: usage('kubectl'), requiresLocal: true, noAuthOk: ['openwhisk'] })
   }))
 }

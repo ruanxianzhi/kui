@@ -70,6 +70,8 @@ export const preprocessTable = (raw: string[]): { rows?: IPair[][]; trailingStri
         trailingString: table
       }
     } else {
+      const lowerBoundLastColumnEnd = columnStarts[columnStarts.length - 1]
+
       const possibleRows = table
         .split(/\n/)
       debug('possibleRows', possibleRows)
@@ -154,6 +156,7 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     : ''
 
   const drilldownKind = nameSplit => {
+    debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
@@ -189,8 +192,8 @@ export const formatTable = (command: string, verb: string, entityType: string, o
     // if there isn't a global namespace specifier, maybe there is a row namespace specifier
     // we use the row specifier in preference to a global specifier -- is that right?
     const ns = (namespaceColumnIdx >= 0 &&
-                command !== 'helm' &&
-                `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
+      command !== 'helm' &&
+      `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) || drilldownNamespace || ''
 
     // idx === 0: don't click on header row
     const onclick = idx === 0 ? false

@@ -57,7 +57,7 @@ export const key = 'kui.symbol_table'
  */
 export interface IExecutor {
   name: string
-  exec (commandUntrimmed: string, execOptions: IExecOptions)
+  exec(commandUntrimmed: string, execOptions: IExecOptions)
 }
 
 /**
@@ -66,7 +66,7 @@ export interface IExecutor {
  */
 export interface IReplEval {
   name: string
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
+  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs)
 }
 
 /**
@@ -76,7 +76,7 @@ export interface IReplEval {
  */
 export class DirectReplEval implements IReplEval {
   name = 'DirectReplEval'
-  apply (commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
+  apply(commandUntrimmed: string, execOptions: IExecOptions, evaluator: IEvaluator, args: IEvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -145,8 +145,8 @@ export const qexec = (command: string, block?: HTMLElement | boolean, contextCha
     noHistory: true,
     contextChangeOK
   }, execOptions, {
-    type: ExecType.Nested
-  }))
+      type: ExecType.Nested
+    }))
 }
 
 /**
@@ -313,7 +313,7 @@ const unflag = (opt: string) => opt && stripTrailer(opt.replace(/^[-]+/, ''))
 class InProcessExecutor implements IExecutor {
   name = 'InProcessExecutor'
 
-  async exec (commandUntrimmed: string, execOptions = emptyExecOptions()) {
+  async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = execOptions.tab || cli.getCurrentTab()
@@ -446,7 +446,7 @@ class InProcessExecutor implements IExecutor {
         // narg: any flags that take more than one argument e.g. -p key value would have { narg: { p: 2 } }
         const commandFlags: YargsParserFlags = (evaluator.options && evaluator.options.flags) ||
           (evaluator.options && evaluator.options.synonymFor &&
-           evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
+            evaluator.options.synonymFor.options && evaluator.options.synonymFor.options.flags) ||
           ({} as YargsParserFlags)
         const optional = builtInOptions.concat((evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || [])
         const optionalBooleans = optional && optional.filter(({ boolean }) => boolean).map(_ => unflag(_.name))
@@ -519,7 +519,7 @@ class InProcessExecutor implements IExecutor {
           for (let optionalArg in parsedOptions) {
             // skip over minimist's _
             if (optionalArg === '_' ||
-                parsedOptions[optionalArg] === false) { // minimist nonsense
+              parsedOptions[optionalArg] === false) { // minimist nonsense
               continue
             }
 
@@ -558,19 +558,19 @@ class InProcessExecutor implements IExecutor {
                 return oops(command, block, nextBlock)(err)
               }
             } else if ((match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
-                       (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
-                       (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
-                       (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
-                       (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
-                       (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
-                        !(typeof parsedOptions[optionalArg] === 'string' ||
-                          typeof parsedOptions[optionalArg] === 'number' ||
-                          typeof parsedOptions[optionalArg] === 'boolean')) ||
+              (match.file && typeof parsedOptions[optionalArg] !== 'string') ||
+              (match.booleanOK && !(typeof parsedOptions[optionalArg] === 'boolean' || typeof parsedOptions[optionalArg] === 'string')) ||
+              (match.numeric && typeof parsedOptions[optionalArg] !== 'number') ||
+              (match.narg > 1 && !Array.isArray(parsedOptions[optionalArg])) ||
+              (!match.boolean && !match.booleanOK && !match.numeric && (!match.narg || match.narg === 1) &&
+                !(typeof parsedOptions[optionalArg] === 'string' ||
+                  typeof parsedOptions[optionalArg] === 'number' ||
+                  typeof parsedOptions[optionalArg] === 'boolean')) ||
 
-                       // is the given option not one of the allowed options
-                       (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
-                                                             _ === '...' ||
-                                                             (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
+              // is the given option not one of the allowed options
+              (match.allowed && !match.allowed.find(_ => _ === parsedOptions[optionalArg] ||
+                _ === '...' ||
+                (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)))) {
               //
               // then the user passed an option, but of the wrong type
               //
@@ -598,8 +598,8 @@ class InProcessExecutor implements IExecutor {
           //
           if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
             // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-            if (! (nActualArgs >= nRequiredArgs &&
-                   nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
+            if (!(nActualArgs >= nRequiredArgs &&
+              nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
               const selection = currentSelection(tab)
@@ -607,7 +607,7 @@ class InProcessExecutor implements IExecutor {
               let nActualArgsWithImplicit = nActualArgs
 
               if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.type ||
-                                                                                         _ === selection.prettyType)) {
+                _ === selection.prettyType)) {
                 nActualArgsWithImplicit++
 
                 // if implicit, maybe other required parameters aren't needed
@@ -671,8 +671,8 @@ class InProcessExecutor implements IExecutor {
         // that we ignore this needsUI constraint if the user is
         // asking for help
         if (isHeadless() && !parsedOptions.cli && !parsedOptions.help &&
-            ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
-             || (evaluator.options && evaluator.options.needsUI))) {
+          ((process.env.DEFAULT_TO_UI && !parsedOptions.cli)
+            || (evaluator.options && evaluator.options.needsUI))) {
           import('../main/headless').then(({ createWindow }) => createWindow(argv, evaluator.options.fullscreen, evaluator.options))
           return Promise.resolve(true)
         }
@@ -892,9 +892,9 @@ export const encodeComponent = (component: string, quote = '"') => {
   if (component === undefined) {
     return ''
   } else if (typeof component === 'string' &&
-             patterns.whitespace.test(component) &&
-             component.charAt(0) !== quote &&
-             component.charAt(component.length - 1) !== quote) {
+    patterns.whitespace.test(component) &&
+    component.charAt(0) !== quote &&
+    component.charAt(component.length - 1) !== quote) {
     return `${quote}${component}${quote}`
   } else {
     return component
