@@ -1,5 +1,5 @@
 {
-  "name": "kui-shell",
+  "name": "kui-shell-dev",
   "version": "2.0.5",
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "build/packages/app/src/main/main.js",
