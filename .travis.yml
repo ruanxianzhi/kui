@@ -66,7 +66,7 @@ jobs:
         - BRANCH="latest" ./publish.sh
       deploy:
           - provider: script
-            script: npm install && npx lerna publish from-package --yes --github-release --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm install && npx lerna publish from-package --yes --create-release=github --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
