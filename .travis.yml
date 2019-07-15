@@ -50,9 +50,9 @@ jobs:
       script: 
         - echo "starting the release"
       after_success:
+        - git config --global user.email ${GITHUB_EMAIL}
+        - git config --global user.name ${GITHUB_USER}
         - git remote add pub https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git fetch pub master
-        - git checkout master
       before_deploy:
         - npm install
         - cd clients/default
@@ -65,7 +65,7 @@ jobs:
         - BRANCH="latest" ./publish.sh
       deploy:
           - provider: script
-            script: npm install && npx lerna publish from-package --github-release --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm install && npx lerna publish from-package --yes --github-release --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
