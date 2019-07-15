@@ -9,73 +9,7 @@ services:
 os:
   - linux
   - osx
-
-env:
-  matrix:
-    - SCRIPTS="lint.sh typecov.sh"
-      LAYERS="core bash-like core-support editor"
-      MOCHA_TARGETS="webpack electron"
-      KUI_USE_PROXY=false
-      NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
-
-    - SCRIPTS="build-webpack-client.sh"
-      LAYERS="openwhisk1 openwhisk3 grid"
-      MOCHA_TARGETS="webpack electron"
-      KUI_USE_PROXY=false
-      NEEDS_OPENWHISK=true
-
-    - LAYERS="openwhisk2 openwhisk4 composer1 composer2"
-      MOCHA_TARGETS="electron"
-      NEEDS_OPENWHISK=true
-      NEEDS_OPENWHISK_API_GATEWAY=true
-      NEEDS_OPENWHISK_NODEJS8=true
-      NEEDS_OPENWHISK_JAVA8=true
-      NEEDS_SECOND_OPENWHISK_AUTH=true # see plugins/plugin-openwhisk/src/test/openwhisk2/auth.ts
-
-    - WAIT_LAYERS="k8s"
-      LAYERS="HEADLESS k8s1 k8s2"
-      KUI_USE_PROXY=true
-      MOCHA_TARGETS="webpack electron"
-      NEEDS_KUBERNETES=true
-      NEEDS_HELM=true
-      NEEDS_HEADLESS=true
-      NEEDS_OPENWHISK=true
-      TIMEOUT=100000
-
-  global:
-    - TRAVIS_KUBE_VERSION=1.12
-    - TRAVIS_HELM_VERSION=2.13.0
-    - WEBPACK_CLIENT_URL="http://localhost:9080/"
-    - WEB_COMPRESS=none
-    - RUNNING_KUI_TEST=true
-    - KUI_USE_HTTP=true
-    - TEST_ORG=testorg
-    - TEST_SPACE=testspace
-    - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
-    - NO_OPENWHISK_API_MGMT=true # no openwhisk api management support
-    - IGNORE_CERTS=true # apache-composer needs this, because it doesn't obey INSECURE_SSL in wskprops
-    - PATH=bin:$PATH
-    - NO_MAC_DMG_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` # we can't build macOS DMG files in linux travis :(
-    - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
-    - WINDOW_HEIGHT=1050                  # ! ibid !
-    - LINUX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-linux-x64/Kui" # test against linux electron build
-    - OSX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui" # test against darwin electron build
-    - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BUILD" || echo "$OSX_BUILD"`
-    - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
-    - HOMEBREW_NO_AUTO_UPDATE=1           # disable auto update before running brew install, brew upgrade or brew tap
-
-# to save some time in the runs, exclude layers that are not currently
-# compatible with osx; the travis method for this is a bit clumsy: we
-# have to repeat the entire env!
-matrix:
-  exclude:
-    - os: osx
-      env: SCRIPTS="build-webpack-client.sh" LAYERS="openwhisk1 openwhisk3 grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
-    - os: osx
-      env: LAYERS="openwhisk2 openwhisk4 composer1 composer2" MOCHA_TARGETS="electron" NEEDS_OPENWHISK=true NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_NODEJS8=true NEEDS_OPENWHISK_JAVA8=true NEEDS_SECOND_OPENWHISK_AUTH=true
-    - os: osx
-      env: WAIT_LAYERS="k8s" LAYERS="HEADLESS k8s1 k8s2" KUI_USE_PROXY=true MOCHA_TARGETS="webpack electron" NEEDS_KUBERNETES=true NEEDS_HELM=true NEEDS_HEADLESS=true NEEDS_OPENWHISK=true TIMEOUT=100000
-
+  
 install: ./tools/travis/test/install.sh
 script: ./tools/travis/test/script.sh
 
@@ -110,6 +44,35 @@ jobs:
               branch: master
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = cron
+    - stage: official release
+      env: ""
+      node_js: "8"
+      script: 
+        - echo "starting the release"
+      after_success:
+        - git config --global user.email ${GITHUB_EMAIL}
+        - git config --global user.name ${GITHUB_USER}
+        - git remote add pub https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+      before_deploy:
+        - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
+        - npm install
+        - cd clients/default
+        - npm run build:headless && npm run build:electron
+        - cd ../..
+      after_deploy:
+        - cd packages/kui-builder/dist/publishers/s3
+        - npm install
+        - BRANCH="stable.$TRAVIS_BUILD_NUMBER" ./publish.sh
+        - BRANCH="latest" ./publish.sh
+      deploy:
+          - provider: script
+            script: npm install && npx lerna publish from-package --yes --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            skip_cleanup: true
+            keep_history: true
+            on:
+              branch: testing-for-release
+              repo: composer/kui
+              condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
 notifications:
   webhooks:
