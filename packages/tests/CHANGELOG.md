@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.2.0 (2019-07-15)
+
+### Bug Fixes
+
+- **packages/tests:** regression in LAYER env var ([df217af](https://github.com-personal/ruanxianzhi/kui/commit/df217af))
+- **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com-personal/ruanxianzhi/kui/commit/1f7c263)), closes [#510](https://github.com-personal/ruanxianzhi/kui/issues/510) [#425](https://github.com-personal/ruanxianzhi/kui/issues/425)
+- **test:** refactor /tests ([98f6096](https://github.com-personal/ruanxianzhi/kui/commit/98f6096)), closes [#496](https://github.com-personal/ruanxianzhi/kui/issues/496)
+
+### Features
+
+- update sidecar tab UI ([9639811](https://github.com-personal/ruanxianzhi/kui/commit/9639811)), closes [#1867](https://github.com-personal/ruanxianzhi/kui/issues/1867)
+
 # 0.1.0 (2019-07-15)
 
 ### Bug Fixes
