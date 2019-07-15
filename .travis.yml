@@ -50,7 +50,8 @@ jobs:
       script: 
         - echo "starting the release"
       after_success:
-        - git remote -f add pub https://f08cfef70ea11071669add16fe09f33c4debbdc6@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote add pub https://f08cfef70ea11071669add16fe09f33c4debbdc6@github.com/${TRAVIS_REPO_SLUG}.git
+        - git fetch pub master
         - git checkout master
       before_deploy:
         - npm install
