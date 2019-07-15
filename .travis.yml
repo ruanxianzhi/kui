@@ -53,6 +53,7 @@ jobs:
         - git config --global user.email ${GITHUB_EMAIL}
         - git config --global user.name ${GITHUB_USER}
         - git remote set-url origin git@${GH_TOKEN}@github.com:${TRAVIS_REPO_SLUG}.git
+        - git checkout -b testing-branch
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npx lerna version --conventional-commits --yes --no-git-tag-version --create-release=github
