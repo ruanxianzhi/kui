@@ -53,6 +53,7 @@ jobs:
         - git config --global user.email ${GITHUB_EMAIL}
         - git config --global user.name ${GITHUB_USER}
         - git remote add pub https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git checkout master
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npm install
@@ -70,7 +71,7 @@ jobs:
             skip_cleanup: true
             keep_history: true
             on:
-              branch: testing-for-release
+              branch: master
               repo: composer/kui
               condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
