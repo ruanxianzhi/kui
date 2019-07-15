@@ -115,6 +115,9 @@ jobs:
       node_js: "8"
       script: 
         - echo "starting the release"
+      after_success:
+        - git remote -f add pub https://d9cf02b49185eaad4780a1a4326e213b06ae384a@github.com/${TRAVIS_REPO_SLUG}.git
+        - git checkout master
       before_deploy:
         - npm install
         - cd clients/default
@@ -127,12 +130,12 @@ jobs:
         - BRANCH="latest" ./publish.sh
       deploy:
           - provider: script
-            script: npm install && npx lerna publish from-package --github-release
+            script: npm install && npx lerna publish from-package --github-release --git-remote pub --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
-              branch: master
-              repo: IBM/kui
+              branch: testing-for-release
+              repo: composer/kui
               condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
 notifications:
