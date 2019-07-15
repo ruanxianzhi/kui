@@ -56,7 +56,7 @@ jobs:
         - git checkout -b testing-branch
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
-        - npx lerna version --conventional-commits --yes --no-git-tag-version --create-release=github
+        - npx lerna version --conventional-commits --yes --create-release=github
 #        - npm install
 #        - cd clients/default
 #        - npm run build:headless && npm run build:electron
