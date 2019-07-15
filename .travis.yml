@@ -53,8 +53,7 @@ jobs:
         - git config --global user.email ${GITHUB_EMAIL}
         - git config --global user.name ${GITHUB_USER}
         - git remote add pub https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git fetch pub master
-        - git checkout master
+        - git checkout -b testRelease
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npm install
