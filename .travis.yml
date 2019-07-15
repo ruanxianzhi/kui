@@ -66,9 +66,7 @@ jobs:
         - BRANCH="latest" ./publish.sh
       deploy:
           - provider: script
-            script: 
-              - npx lerna version --conventional-commits --yes --no-git-tag-version --create-release=github --git-remote pub
-              - npx lerna publish from-package --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npx lerna version --conventional-commits --yes --no-git-tag-version --create-release=github --git-remote pub && npx lerna publish from-package --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
