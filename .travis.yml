@@ -52,8 +52,8 @@ jobs:
       after_success:
         - git config --global user.email ${GITHUB_EMAIL}
         - git config --global user.name ${GITHUB_USER}
-        - git remote add pub https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git fetch pub master
+        - git remote add -f pub https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote -v
         - git checkout master
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
