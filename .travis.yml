@@ -53,7 +53,8 @@ jobs:
         - git config --global user.email ${GITHUB_EMAIL}
         - git config --global user.name ${GITHUB_USER}
         - git remote add pub https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git checkout -b master
+        - git checkout -b test
+        - git push -u pub test
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npx lerna version --git-remote pub --conventional-commits --yes --create-release=github 
