@@ -55,8 +55,8 @@ jobs:
         - cd clients/default
         - npm run build:headless && npm run build:electron
         - cd ../..
-      after_deploy:
-        - cd packages/kui-builder/dist/publishers/s3
+      after_script:
+#        - cd packages/kui-builder/dist/publishers/s3
 #        - npm install
 #        - BRANCH="stable.$TRAVIS_BUILD_NUMBER" ./publish.sh
 #        - BRANCH="latest" ./publish.sh
