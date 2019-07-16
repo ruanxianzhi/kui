@@ -57,11 +57,10 @@ jobs:
         - git push -u pub test
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
-        - npx lerna version --git-remote pub --conventional-commits --yes --create-release=github 
-#        - npm install
-#        - cd clients/default
-#        - npm run build:headless && npm run build:electron
-#        - cd ../..
+        - npm install
+        - cd clients/default
+        - npm run build:headless && npm run build:electron
+        - cd ../..
       after_deploy:
         - cd packages/kui-builder/dist/publishers/s3
 #        - npm install
@@ -75,6 +74,16 @@ jobs:
             on:
               branch: testing-for-release
               repo: composer/kui
+              condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
+          - provider: releases
+            api_key:
+              secure: ${GH_TOKEN}
+            file_glob: true
+            file: clients/dist/electron/*
+            skip_cleanup: true
+            on:
+              repo: testing-for-release
+              branch: composer/kui
               condition: $TRAVIS_EVENT_TYPE = push && $TRAVIS_COMMIT_MESSAGE =~ ([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
 notifications:
