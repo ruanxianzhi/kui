@@ -49,7 +49,7 @@ jobs:
       node_js: "8"
       script: 
         - echo "starting the release"
-      before_deploy:
+      before_script:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npm install
         - cd clients/default
