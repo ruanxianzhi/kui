@@ -49,12 +49,6 @@ jobs:
       node_js: "8"
       script: 
         - echo "starting the release"
-      after_success:
-        - git config --global user.email ${GITHUB_EMAIL}
-        - git config --global user.name ${GITHUB_USER}
-        - git remote add pub https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git checkout -b test
-        - git push -u pub test
       before_deploy:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
         - npm install
