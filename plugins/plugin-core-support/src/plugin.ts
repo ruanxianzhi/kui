@@ -45,7 +45,8 @@ export default async (commandTree: CommandRegistrar) => {
     sleep(commandTree),
     history(commandTree),
     about(commandTree),
-    confirm(commandTree)
+    confirm(commandTree),
+    run(commandTree)
   ])
 
   if (!isHeadless()) {
